@@ -1,0 +1,15 @@
+# Build folders
+build/
+
+# Object and executable files
+*.o
+*.elf
+*.bin
+*.hex
+
+# Temporary files
+*.d
+*.dep
+
+# Unnecessary folders
+.vscode/

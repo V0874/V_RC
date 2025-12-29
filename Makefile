@@ -197,7 +197,7 @@ clean:
 #######################################
 
 flash:
-	STM32_Programmer_CLI -c port=SWD -d build/V_RC.hex 0x08000000 -rst -v
+	STM32_Programmer_CLI -c port=SWD -d build/V_RC.hex -rst
 	
 #######################################
 # dependencies

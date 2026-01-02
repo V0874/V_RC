@@ -57,8 +57,10 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
 Core/Src/system_stm32f4xx.c \
 Core/Src/sysmem.c \
 Core/Src/syscalls.c \
-app/app.c \
-app/adc/adc.c
+app_drivers/adc/adc.c \
+app_drivers/common_funcs/common_funcs.c \
+app_drivers/gpio/gpio.c \
+app_drivers/uart/uart.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -124,8 +126,10 @@ C_INCLUDES =  \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
 -IDrivers/CMSIS/Include \
--Iapp/ \
--Iapp/adc
+-Iapp_drivers/adc \
+-Iapp_drivers/common_funcs \
+-Iapp_drivers/gpio \
+-Iapp_drivers/uart 
 
 
 # compile gcc flags

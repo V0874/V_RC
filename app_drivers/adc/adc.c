@@ -14,7 +14,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *adc){
     HAL_GPIO_Init(GPIOA, &adc_pins);    
 }
 
-void adc_init_y(ADC_HandleTypeDef *adc, ADC_ChannelConfTypeDef *adc_conf){
+void adc_init(ADC_HandleTypeDef *adc, ADC_ChannelConfTypeDef *adc_conf){
     adc->Instance = ADC1;
 
     adc->Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
@@ -33,5 +33,9 @@ void adc_init_y(ADC_HandleTypeDef *adc, ADC_ChannelConfTypeDef *adc_conf){
     HAL_ADC_Init(adc);
     HAL_ADC_ConfigChannel(adc, adc_conf);
     __HAL_ADC_ENABLE(adc);
-    HAL_ADC_Start(adc);
+}
+
+void adc_change_ch(ADC_HandleTypeDef *adc, ADC_ChannelConfTypeDef *config, uint32_t channel){
+    config->Channel = channel;
+    HAL_ADC_ConfigChannel(adc, config);
 }

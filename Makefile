@@ -60,7 +60,8 @@ Core/Src/syscalls.c \
 app_drivers/adc/adc.c \
 app_drivers/common_funcs/common_funcs.c \
 app_drivers/gpio/gpio.c \
-app_drivers/uart/uart.c
+app_drivers/uart/uart.c \
+app_drivers/lcd_screen/lcd_screen.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -129,8 +130,8 @@ C_INCLUDES =  \
 -Iapp_drivers/adc \
 -Iapp_drivers/common_funcs \
 -Iapp_drivers/gpio \
--Iapp_drivers/uart 
-
+-Iapp_drivers/uart \
+-Iapp_drivers/lcd_screen
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

@@ -3,7 +3,6 @@
 @file lcd_screen.c
 @brief lcd_screen source file
 @device HD44780U
-@version 0.1
 @author V0874
 @date 01/02/2026
 
@@ -12,44 +11,121 @@
 #include <stdint.h>
 #include "stm32f4xx_hal.h"
 
-// define lcd port for pins
-#define LCD_PORT GPIOA
+/**
+ * @brief gpio type for lcd pins 
+ */
 
-// define lcd register select / read/write  / databus pins 
-#define LCD_PIN_RS GPIO_PIN_13
-#define LCD_PIN_RW GPIO_PIN_14
-#define LCD_PIN_DB0 GPIO_PIN_15
-#define LCD_PIN_DB1 GPIO_PIN_3
-#define LCD_PIN_DB2 GPIO_PIN_4
-#define LCD_PIN_DB3 GPIO_PIN_5
-#define LCD_PIN_DB4 GPIO_PIN_6
-#define LCD_PIN_DB5 GPIO_PIN_7
-#define LCD_PIN_DB6 GPIO_PIN_8
-#define LCD_PIN_DB7 GPIO_PIN_9
+typedef struct{
+ GPIO_TypeDef* port;
+ uint16_t pin;
+} lcd_t;
 
-// Initialize screen and LCD pins
-void lcd_init();
+/**
+ * @brief lcd reg/databus structure
+ */
 
-void display_write(uint8_t ch);
+typedef struct{
+lcd_t reg_select;
+lcd_t read_write;
+lcd_t start_read_write;
+lcd_t data_bus[8];
+} lcd_config_t;
 
-void read_busy_flag();
+/**
+ * @brief clears the display to its original state
+ * 
+ * @param config lcd port/pin config 
+ */
 
-void display_clear();
+void display_clear(const lcd_config_t *config);
 
-void cursor_home();
+/**
+ * @brief shifts the entire display to the left
+ * 
+ * @param config lcd port/pin config
+ * @note the cursor follows the display shift
+ */
 
-void display_on();
+void shift_display_left(const lcd_config_t *config);
 
-void display_off();
+/**
+ * @brief shifts the entire display to the right
+ * 
+ * @param config lcd port/pin config
+ * @note the cursor follows the displays shift
+ */
 
-void cursor_on();
+void shift_display_right(const lcd_config_t *config);
 
-void cursor_off();
+/**
+ * @brief shifts the cursor one value to the left
+ * 
+ * @param config lcd port/pin config 
+ */
 
-void display_ch_blink();
+void shift_cursor_left(const lcd_config_t* config);
 
-void cursor_shift();
+/**
+ * @brief shifts the cursor one value to the right
+ * 
+ * @param config lcd port/pin config 
+ */
 
-void display_shift();
+void shift_cursor_right(const lcd_config_t* config);
 
+/**
+ * @brief writes to the screen
+ * 
+ * @param config 
+ * @param ch 
+ */
 
+void display_write(const lcd_config_t *config, const uint8_t ch);
+
+/**
+ * @brief turns on the display
+ * 
+ * @param config lcd port/pin config
+ */
+
+void display_on(const lcd_config_t *config);
+
+/**
+ * @brief turns off the display
+ * 
+ * @param config lcd port/pin config
+ */
+
+void display_off(const lcd_config_t *config);
+
+/**
+ * @brief returns the cursor to the main edge of the display
+ * 
+ * @param config lcd port/pin config
+ */
+
+void cursor_home(const lcd_config_t *config);
+
+/**
+ * @brief turns cursor on
+ * 
+ * @param config lcd port/pin config
+ */
+
+void cursor_on(const lcd_config_t *config);
+
+/**
+ * @brief turns cursor off
+ * 
+ * @param config lcd port/pin config
+ */
+
+void cursor_off(const lcd_config_t *config);
+
+/**
+ * @brief 
+ * 
+ * @param config lcd port/pin config 
+ */
+
+void display_ch_blink(const lcd_config_t *config);

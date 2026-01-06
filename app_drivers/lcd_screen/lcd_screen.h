@@ -9,6 +9,7 @@
 */
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "stm32f4xx_hal.h"
 
 /**
@@ -22,111 +23,120 @@ typedef struct{
 
 /**
  * @brief lcd reg/databus structure
+ * @note 8 bit mode can be supported but must be configured
  */
 
 typedef struct{
-lcd_t reg_select;
-lcd_t read_write;
-lcd_t start_read_write;
-lcd_t data_bus[8];
+lcd_t rs;
+lcd_t rw;
+lcd_t e;
+lcd_t db[4];
 } lcd_config_t;
 
 /**
  * @brief clears the display to its original state
  * 
- * @param[in] config lcd port/pin config 
+ * @param[in] cfg lcd port/pin config 
  */
 
-void display_clear(const lcd_config_t *config);
+void display_clear(const lcd_config_t *cfg);
+
+ /**
+ * @brief returns the cursor to the main edge of the display
+ * 
+ * @param[in] cfg lcd port/pin config
+ */
+
+void cursor_home(const lcd_config_t *cfg);
 
 /**
  * @brief shifts the entire display to the left
  * 
- * @param[in] config lcd port/pin config
+ * @param[in] cfg lcd port/pin config
  * @note the cursor follows the display shift
  */
 
-void shift_display_left(const lcd_config_t *config);
+void shift_display_left(const lcd_config_t *cfg);
 
 /**
  * @brief shifts the entire display to the right
  * 
- * @param[in] config lcd port/pin config
+ * @param[in] cfg lcd port/pin config
  * @note the cursor follows the displays shift
  */
 
-void shift_display_right(const lcd_config_t *config);
+void shift_display_right(const lcd_config_t *cfg);
 
 /**
  * @brief shifts the cursor one value to the left
  * 
- * @param[in] config lcd port/pin config 
+ * @param[in] cfg lcd port/pin config 
  */
 
-void shift_cursor_left(const lcd_config_t* config);
+void shift_cursor_left(const lcd_config_t* cfg);
 
 /**
  * @brief shifts the cursor one value to the right
  * 
- * @param[in] config lcd port/pin config 
+ * @param[in] cfg lcd port/pin config 
  */
 
-void shift_cursor_right(const lcd_config_t* config);
+void shift_cursor_right(const lcd_config_t* cfg);
 
 /**
  * @brief writes to the screen
  * 
- * @param[in] config lcd port/pin config
+ * @param[in] cfg port/pin lcd config 
  * @param[in] ch accepts most ascii char
  * @note some special characters must be built
  */
 
-void display_write(const lcd_config_t *config, const uint8_t ch);
+void display_write(const lcd_config_t *cfg, const uint8_t ch);
 
 /**
  * @brief turns on the display
  * 
- * @param[in] config lcd port/pin config
+ * @param[in] cfg lcd port/pin config
  */
 
-void display_on(const lcd_config_t *config);
+void display_on(const lcd_config_t *cfg);
 
 /**
  * @brief turns off the display
  * 
- * @param[in] config lcd port/pin config
+ * @param[in] cfg lcd port/pin config
  */
 
-void display_off(const lcd_config_t *config);
-
-/**
- * @brief returns the cursor to the main edge of the display
- * 
- * @param[in] config lcd port/pin config
- */
-
-void cursor_home(const lcd_config_t *config);
+void display_off(const lcd_config_t *cfg);
 
 /**
  * @brief turns cursor on
  * 
- * @param[in] config lcd port/pin config
+ * @param[in] cfg lcd port/pin config
  */
 
-void cursor_on(const lcd_config_t *config);
+void cursor_on(const lcd_config_t *cfg);
 
 /**
  * @brief turns cursor off
  * 
- * @param[in] config lcd port/pin config
+ * @param[in] cfg lcd port/pin config
  */
 
-void cursor_off(const lcd_config_t *config);
+void cursor_off(const lcd_config_t *cfg);
 
 /**
- * @brief 
+ * @brief turns blink on for current cursor position
  * 
- * @param[in] config lcd port/pin config 
+ * @param[in] cfg lcd port/pin config 
  */
 
-void display_ch_blink(const lcd_config_t *config);
+void blink_on(const lcd_config_t *cfg);
+
+/**
+ * @brief turns blink off for current cursor position
+ * 
+ * @param cfg lcd port/pin config 
+ */
+
+void blink_off(const lcd_config_t *cfg);

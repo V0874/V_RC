@@ -10,3 +10,7 @@ void utoa(uint8_t *buffer, uint32_t value, size_t size){
         buffer[i] = temp;
     }
 }
+
+void delay(uint32_t delay){
+    HAL_Delay(delay);
+}

@@ -1,235 +1,160 @@
 #include "lcd_screen.h"
 
 /**
- * @brief pulses the E pin to latch the data sent on the bus
+ * @brief constants for commands to send to the display
  * 
- * @param[in] cfg port/pin config 
  */
 
-static void pulse(const lcd_config_t *cfg){
-    HAL_GPIO_WritePin(cfg->e.port, cfg->e.pin, GPIO_PIN_SET);
+static const uint8_t CLEAR_DISPLAY = 0x01;
+static const uint8_t RETURN_HOME = 0x02;
+static const uint8_t ENTRY_MODE_SET = 0x04;
+static const uint8_t DISPLAY_CTRL = 0x08;
+static const uint8_t CURSOR_DISPLAY_SHIFT = 0x10;
+static const uint8_t FUNC_SET = 0x20;
+static const uint8_t SET_CGRAM_ADDR = 0x40;
 
-    HAL_Delay(1);
+/**
+ * @brief constants for masking data/commands into 4 bit values
+ * 
+ */
 
-    HAL_GPIO_WritePin(cfg->e.port, cfg->e.pin, GPIO_PIN_RESET);
+static const uint8_t HIGH_NIB_MASK = 0xf0;
+static const uint8_t LOW_NIB_MASK = 0x0f;
+
+/**
+ * @brief pulse to latch the data to the display
+ * 
+ * @param[in] cfg port/pin configuration 
+ */
+
+static void pulse(lcd_config_t *cfg){
+    set_pin_high(cfg->e.port, cfg->e.pin);
+    
+    delay(1);
+    
+    set_pin_low(cfg->e.port, cfg->e.pin);
+    
+    delay(1);
 }
 
 /**
- * @brief clears the databus pins
+ * @brief sends a 4 byte nibble to the databus
  * 
- * @param[in] cfg lcd port/pin config
+ * @param cfg port/pin configuration
+ * @param[in] nib nibble to send 
  */
 
-static void clear_databus(const lcd_config_t *cfg){
-    for(int i = 0; i < 4; i++){
-        HAL_GPIO_WritePin(cfg->db[i].port, cfg->db[i].pin, GPIO_PIN_RESET);
+static void send_nib(lcd_config_t *cfg, const uint8_t nib){
+    for(uint8_t i = 0; i < 4; i++){
+        if((nib >> i) & 1)
+        set_pin_high(cfg->db[i].port, cfg->db[i].pin);
+        else
+        set_pin_low(cfg->db[i].port, cfg->db[i].pin); 
     }
     pulse(cfg);
 }
 
 /**
- * @brief clears the reg select pin and read/write pin
+ * @brief sends a command to send to the display
  * 
- * @param[in] cfg lcd port/pin cfg 
+ * @param[in] cfg port/pin configuration 
+ * @param[in] command  command to send
  */
 
-static void clear_rs_rw(const lcd_config_t* cfg){
-    HAL_GPIO_WritePin(cfg->rs.port, cfg->rs.pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(cfg->rw.port, cfg->rw.pin, GPIO_PIN_RESET);
+static void send_command(lcd_config_t *cfg, const uint8_t command){
+    const uint8_t high_nib = (command & HIGH_NIB_MASK) >> 4;
+    const uint8_t low_nib = command & LOW_NIB_MASK;
 
-    pulse(cfg);
+    set_pin_low(cfg->rs.port, cfg->rs.pin);
+
+    send_nib(cfg, high_nib);
+    send_nib(cfg, low_nib);
 }
 
 /**
- * @brief clears the reg select pin / read/write pin and the databus pins
+ * @brief sends a character to the display
  * 
- * @param[in] cfg lcd port/pin config
+ * @param[in] cfg port/pin configuration
+ * @param[in] ch char to send 
  */
 
-static void clear_pins(const lcd_config_t *cfg){
-    clear_databus(cfg);
-    clear_rs_rw(cfg);
-    
-    pulse(cfg);
+void send_char(lcd_config_t *cfg, uint8_t ch){
+    uint8_t high_nib = (ch & HIGH_NIB_MASK) >> 4;
+    uint8_t low_nib = ch & LOW_NIB_MASK;
+
+    set_pin_high(cfg->rs.port, cfg->rs.pin);
+
+    send_nib(cfg, high_nib);
+    send_nib(cfg, low_nib);
 }
 
 /**
- * @brief clears the display to its original state
+ * @brief clear the display
  * 
- * @param[in] cfg lcd port/pin config 
+ * @param[in] cfg port/pin configuration 
  */
 
-void display_clear(const lcd_config_t *cfg){
-    clear_pins(cfg);
-
-    HAL_GPIO_WritePin(cfg->db[0].port, cfg->db[0].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
-    }
-
- /**
- * @brief returns the cursor to the main edge of the display
- * 
- * @param[in] cfg lcd port/pin config
- */
-
-void cursor_home(const lcd_config_t *cfg){
-    clear_pins(cfg);
-
-    HAL_GPIO_WritePin(cfg->db[1].port, cfg->db[1].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
-}   
-
-/**
- * @brief shifts the entire display to the left
- * 
- * @param[in] cfg lcd port/pin config
- * @note the cursor follows the display shift
- */
-
-void shift_display_left(const lcd_config_t *cfg){
-    clear_pins(cfg);
-
-    HAL_GPIO_WritePin(cfg->db[3].port, cfg->db[3].pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(cfg->db[4].port, cfg->db[4].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
+void clear_display(lcd_config_t *cfg){
+    send_command(cfg, CLEAR_DISPLAY);
 }
 
 /**
- * @brief shifts the entire display to the right
+ * @brief return the cursor home
  * 
- * @param[in] cfg lcd port/pin config
- * @note the cursor follows the displays shift
+ * @param[in] cfg port/pin configuration 
  */
 
-void shift_display_right(const lcd_config_t *cfg){
-    clear_pins(cfg);
-
-    HAL_GPIO_WritePin(cfg->db[2].port, cfg->db[2].pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(cfg->db[3].port, cfg->db[3].pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(cfg->db[4].port, cfg->db[4].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
+void return_home(lcd_config_t *cfg){
+    send_command(cfg, RETURN_HOME);
 }
 
 /**
- * @brief shifts the cursor one value to the left
+ * @brief select entry mode
  * 
- * @param[in] cfg lcd port/pin config 
+ * @param[in] cfg port/pin configuration 
  */
 
-void shift_cursor_left(const lcd_config_t* cfg){
-    clear_pins(cfg);
-
-    HAL_GPIO_WritePin(cfg->db[4].port, cfg->db[4].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
+void entry_mode_set(lcd_config_t *cfg){
+    send_command(cfg, ENTRY_MODE_SET);
 }
 
 /**
- * @brief shifts the cursor one value to the right
+ * @brief allows for display configuration
+ * @note display on/off blinker on/off cursor on/off
  * 
- * @param[in] cfg lcd port/pin config 
+ * @param[in] cfg port/pin configuration 
  */
 
-void shift_cursor_right(const lcd_config_t* cfg){
-    clear_pins(cfg);
-
-    HAL_GPIO_WritePin(cfg->db[4].port, cfg->db[4].pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(cfg->db[2].port, cfg->db[2].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
+void display_ctrl_set(lcd_config_t *cfg){
+    send_command(cfg, DISPLAY_CTRL);
 }
 
 /**
- * @brief writes to the screen
+ * @brief cursor/display shift configuration
  * 
- * @param[in] cfg port/pin lcd config 
- * @param[in] ch accepts most ascii char
- * @note some special characters must be built
+ * @param[in] cfg port/pin configuration 
  */
 
-void display_write(const lcd_config_t *cfg, const uint8_t ch){
-    
+void cursor_display_shift(lcd_config_t *cfg){
+    send_command(cfg, CURSOR_DISPLAY_SHIFT);
 }
 
 /**
- * @brief turns on the display
+ * @brief allows for display function setup
  * 
- * @param[in] cfg lcd port/pin config
+ * @param[in] cfg port/pin configuration 
  */
 
-void display_on(const lcd_config_t *cfg){
-    HAL_GPIO_WritePin(cfg->db[2].port, cfg->db[2].pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(cfg->db[3].port, cfg->db[3].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
+void func_set(lcd_config_t *cfg){
+    send_command(cfg, FUNC_SET);
 }
 
 /**
- * @brief turns off the display
+ * @brief set the cgram address
  * 
- * @param[in] cfg lcd port/pin config
+ * @param[in] cfg port/pin configuration 
  */
 
-void display_off(const lcd_config_t *cfg){
-    HAL_GPIO_WritePin(cfg->db[2].port, cfg->db[2].pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(cfg->db[3].port, cfg->db[3].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
+void set_cgram_addr(lcd_config_t *cfg){
+    send_command(cfg, SET_CGRAM_ADDR);
 }
-
-/**
- * @brief turns cursor on
- * 
- * @param[in] cfg lcd port/pin config
- */
-
-void cursor_on(const lcd_config_t *cfg){
-    HAL_GPIO_WritePin(cfg->db[1].port, cfg->db[1].pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(cfg->db[3].port, cfg->db[3].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
-}
-
-/**
- * @brief turns cursor off
- * 
- * @param[in] cfg lcd port/pin config
- */
-
-void cursor_off(const lcd_config_t *cfg){
-    HAL_GPIO_WritePin(cfg->db[1].port, cfg->db[1].pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(cfg->db[3].port, cfg->db[3].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
-}
-
-/**
- * @brief turns blink on for current cursor position
- * 
- * @param[in] cfg lcd port/pin config 
- */
-
-void blink_on(const lcd_config_t *cfg){
-    HAL_GPIO_WritePin(cfg->db[0].port, cfg->db[0].pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(cfg->db[3].port, cfg->db[3].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
-}
-
-/**
- * @brief turns blink off for current cursor position
- * 
- * @param cfg lcd port/pin config 
- */
-
-void blink_off(const lcd_config_t *cfg){
-    HAL_GPIO_WritePin(cfg->db[0].port, cfg->db[0].pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(cfg->db[3].port, cfg->db[3].pin, GPIO_PIN_SET);
-
-    pulse(cfg);
-}
-

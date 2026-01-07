@@ -27,14 +27,14 @@ static const uint8_t LOW_NIB_MASK = 0x0f;
  * @param[in] cfg port/pin configuration 
  */
 
-static void pulse(lcd_config_t *cfg){
+static void pulse(lcd_config_t *cfg, uint8_t ms){
     set_pin_high(cfg->e.port, cfg->e.pin);
     
-    delay(1);
+    delay(ms);
     
     set_pin_low(cfg->e.port, cfg->e.pin);
     
-    delay(1);
+    delay(ms);
 }
 
 /**
@@ -51,7 +51,7 @@ static void send_nib(lcd_config_t *cfg, const uint8_t nib){
         else
         set_pin_low(cfg->db[i].port, cfg->db[i].pin); 
     }
-    pulse(cfg);
+    pulse(cfg, 1);
 }
 
 /**

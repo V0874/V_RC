@@ -28,8 +28,13 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#include "../app/app.h"
-#include "../app/adc/adc.h"
+#include "../adc/adc.h"
+#include "../common_funcs/common_funcs.h"
+#include "../gpio/gpio.h"
+#include "../gpio/gpio_types.h"
+#include "../uart/uart.h"
+#include "../lcd_screen/lcd_screen.h"
+#include "stdbool.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

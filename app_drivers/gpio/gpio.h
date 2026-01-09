@@ -18,9 +18,7 @@
   * @param[in] pin 
   */
 
-void set_pin_high(GPIO_TypeDef* port, uint16_t pin){
-   HAL_GPIO_WritePin(port, pin, GPIO_PIN_SET);
-}
+void set_pin_high(GPIO_TypeDef* port, uint16_t pin);
 
 /**
  * @brief sets the pin low
@@ -29,9 +27,7 @@ void set_pin_high(GPIO_TypeDef* port, uint16_t pin){
  * @param[in] pin 
  */
 
-void set_pin_low(GPIO_TypeDef* port, uint16_t pin){
-   HAL_GPIO_WritePin(port, pin, GPIO_PIN_RESET);
-}
+void set_pin_low(GPIO_TypeDef* port, uint16_t pin);
 
 
 #endif

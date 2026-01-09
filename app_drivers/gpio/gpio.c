@@ -1,24 +1,31 @@
 #include "gpio.h"
 
-void led_flash(){
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-    
-    HAL_Delay(1000);
+/**
+ * @brief inits the pins needed for the display
+ * 
+ */
 
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+ void lcd_gpio_init(){
+    GPIO_InitTypeDef lcd_gpio;
 
-    HAL_Delay(1000);
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    lcd_gpio.Pin = GPIO_PIN_3 | GPIO_PIN_4 |
+                   GPIO_PIN_5 | GPIO_PIN_6 | 
+                   GPIO_PIN_7 | GPIO_PIN_8 | 
+                   GPIO_PIN_9;
+                   
+    lcd_gpio.Mode = GPIO_MODE_OUTPUT_PP;
+    lcd_gpio.Pull = GPIO_NOPULL;
+    lcd_gpio.Speed = GPIO_SPEED_FREQ_LOW;
+
+    HAL_GPIO_Init(GPIOB, &lcd_gpio);
+ }
+
+void set_pin_high(GPIO_TypeDef* port, uint16_t pin){
+   HAL_GPIO_WritePin(port, pin, GPIO_PIN_SET);
 }
 
-void gpio_init(){
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-
-    GPIO_InitTypeDef onboard_led = {0};
-    
-    onboard_led.Pin = GPIO_PIN_13;
-    onboard_led.Mode = GPIO_MODE_OUTPUT_PP;
-    onboard_led.Pull = GPIO_NOPULL;
-    onboard_led.Speed = GPIO_SPEED_FREQ_LOW;
-
-    HAL_GPIO_Init(GPIOC, &onboard_led);
+void set_pin_low(GPIO_TypeDef* port, uint16_t pin){
+   HAL_GPIO_WritePin(port, pin, GPIO_PIN_RESET);
 }

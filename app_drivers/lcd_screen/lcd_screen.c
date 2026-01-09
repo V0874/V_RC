@@ -25,27 +25,27 @@ static const uint8_t CGRAM_ADDR_SETUP = 0x40;
  * 
  */
 
- // toggles display: 1 = on 0 = off
- static const uint8_t DISPLAY_TOGGLE = 0x04;
- // toggles cursor: 1 = on 0 = off
- static const uint8_t CURSOR_TOGGLE = 0x02;
- // toggles character indicated by cursor blink: 1 = on 0 = off
- static const uint8_t BLINK_TOGGLE = 0x01;
- /* toggles display shift to the right or left: 1 = shifts display to right 
- if i/d is 0 / left if 0 ---- if 0, the display does not shift at all*/
- static const uint8_t SHIFT_DISPLAY_TOGGLE = 0x01;
- // toggles increment/decrement on character entry: 1 = increment 0 = decrement
- static const uint8_t INCREMENT_DECREMENT_TOGGLE = 0x02; 
- // toggles the display shift to the right or left: 1 = right 0 = left
- static const uint8_t SHIFT_RL_TOGGLE = 0x04;
- // toggles the display shift / cursor move: 1 = display shift 0 = cursor move
- static const uint8_t SHIFT_CURSOR_TOGGLE = 0x08;
- // toggles the number of display lines: 1 = 2 lines 0 = 1 line
- static const uint8_t NUMBER_LINES_TOGGLE = 0x08;
- // toggles the font pixel selection: 1 = 5 x 10 dots 0 = 5 x 8 dots
- static const uint8_t FONT_TOGGLE = 0x04;
- // toggles the data length: 1 = 8 bits 0 = 4 bits
- static const uint8_t DATA_LENGTH_TOGGLE = 0x10;
+// toggles display: 1 = on 0 = off
+static const uint8_t DISPLAY_TOGGLE = 0x04;
+// toggles cursor: 1 = on 0 = off
+static const uint8_t CURSOR_TOGGLE = 0x02;
+// toggles character indicated by cursor blink: 1 = on 0 = off
+static const uint8_t BLINK_TOGGLE = 0x01;
+/* toggles display shift to the right or left: 1 = shifts display to right 
+if i/d is 0 / left if 0 ---- if 0, the display does not shift at all*/
+static const uint8_t SHIFT_DISPLAY_TOGGLE = 0x01;
+// toggles increment/decrement on character entry: 1 = increment 0 = decrement
+static const uint8_t INCREMENT_DECREMENT_TOGGLE = 0x02; 
+// toggles the display shift to the right or left: 1 = right 0 = left
+static const uint8_t SHIFT_RL_TOGGLE = 0x04;
+// toggles the display shift / cursor move: 1 = display shift 0 = cursor move
+static const uint8_t SHIFT_CURSOR_TOGGLE = 0x08;
+// toggles the number of display lines: 1 = 2 lines 0 = 1 line
+static const uint8_t NUMBER_LINES_TOGGLE = 0x08;
+// toggles the font pixel selection: 1 = 5 x 10 dots 0 = 5 x 8 dots
+static const uint8_t FONT_TOGGLE = 0x04;
+// toggles the data length: 1 = 8 bits 0 = 4 bits
+static const uint8_t DATA_LENGTH_TOGGLE = 0x10;
 
 /**
  * @brief constants for masking data/commands into 4 bit values

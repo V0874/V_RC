@@ -10,13 +10,12 @@
 
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
-    lcd_gpio.Pin = GPIO_PIN_3 | GPIO_PIN_4 |
-                   GPIO_PIN_5 | GPIO_PIN_6 | 
-                   GPIO_PIN_7 | GPIO_PIN_8 | 
-                   GPIO_PIN_9;
+    lcd_gpio.Pin = GPIO_PIN_6 | GPIO_PIN_7 |
+                   GPIO_PIN_8 | GPIO_PIN_9 |
+                   GPIO_PIN_12| GPIO_PIN_13;
                    
-    lcd_gpio.Mode = GPIO_MODE_OUTPUT_PP;
-    lcd_gpio.Pull = GPIO_NOPULL;
+    lcd_gpio.Mode = GPIO_MODE_OUTPUT_OD;
+    lcd_gpio.Pull = GPIO_PULLUP;
     lcd_gpio.Speed = GPIO_SPEED_FREQ_LOW;
 
     HAL_GPIO_Init(GPIOB, &lcd_gpio);

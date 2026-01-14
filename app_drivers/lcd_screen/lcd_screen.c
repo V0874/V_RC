@@ -130,51 +130,51 @@ static void send_command(lcd_config_t *cfg, const uint8_t cmd){
  */
 
 void lcd_init(lcd_config_t *cfg){
-    delay(50);
+    delay(200);
     
     // pulse 8 bit data length three times to set data length mode
 
-    send_high_nib(cfg, FUNC_SETUP | DATA_LENGTH_TOGGLE);
-
-    delay(25);
-
-    send_high_nib(cfg, FUNC_SETUP | DATA_LENGTH_TOGGLE);
-
-    delay(10);
-
-    send_high_nib(cfg, FUNC_SETUP | DATA_LENGTH_TOGGLE);
-
-    delay(10);
-
-    // sets 4 bit mode
-
-    send_high_nib(cfg, FUNC_SETUP);
-
-    delay(10);
-
-    send_command(cfg, FUNC_SETUP | NUMBER_LINES_TOGGLE);
-
-    delay(10);
-
-    // toggles the display off
-    send_command(cfg, DISPLAY_SETUP);
-    
-    delay(10);
-
-    // clears the display
-    send_command(cfg, CLEAR_DISPLAY);
+    send_high_nib(cfg, 0x30);
 
     delay(20);
 
-    // sets the entry mode, increment by 1, shift display off
-    send_command(cfg, ENTRY_MODE_SETUP | INCREMENT_DECREMENT_TOGGLE);
+    send_high_nib(cfg, 0x30);
 
     delay(10);
+
+    send_high_nib(cfg, 0x30);
+
+    delay(5);
+
+    // sets 4 bit mode
+
+    send_high_nib(cfg, 0x20);
+
+    delay(5);
+
+    send_command(cfg, 0x28);
+
+    delay(5);
+
+    // toggles the display off
+    send_command(cfg, 0x08);
+    
+    delay(5);
+
+    // clears the display
+    send_command(cfg, 0x01);
+
+    delay(5);
+
+    // sets the entry mode, increment by 1, shift display off
+    send_command(cfg, 0x06);
+
+    delay(5);
 
     // toggles display on
-    send_command(cfg, DISPLAY_SETUP | DISPLAY_TOGGLE);
+    send_command(cfg, 0x0C);
 
-    delay(10);
+    delay(5);
 }
 
 /**

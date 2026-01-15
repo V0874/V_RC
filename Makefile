@@ -54,6 +54,7 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
+Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 Core/Src/system_stm32f4xx.c \
 Core/Src/sysmem.c \
 Core/Src/syscalls.c \
@@ -61,7 +62,8 @@ app_drivers/adc/adc.c \
 app_drivers/common_funcs/common_funcs.c \
 app_drivers/gpio/gpio.c \
 app_drivers/uart/uart.c \
-app_drivers/lcd_screen/lcd_screen.c
+app_drivers/lcd_screen/lcd_screen.c \
+app_drivers/timer/timer.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -131,7 +133,8 @@ C_INCLUDES =  \
 -Iapp_drivers/common_funcs \
 -Iapp_drivers/gpio \
 -Iapp_drivers/uart \
--Iapp_drivers/lcd_screen
+-Iapp_drivers/lcd_screen \
+-Iapp_drivers/timer
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

@@ -64,12 +64,12 @@ static const uint8_t LOW_NIB_MASK = 0x0f;
 
 static void pulse(lcd_config_t *cfg, uint32_t ms){
     set_pin_high(cfg->e.port, cfg->e.pin);
-    
-    delay(ms);
+
+    delay_us(ms);
     
     set_pin_low(cfg->e.port, cfg->e.pin);
     
-    delay(ms);
+    delay_us(ms);
 }
 
 /**
@@ -86,7 +86,7 @@ static void send_nib(lcd_config_t *cfg, const uint8_t nib){
         else
         set_pin_low(cfg->db[i].port, cfg->db[i].pin); 
     }
-    pulse(cfg, 1);
+    pulse(cfg, 2);
 }
 
 /**
@@ -130,51 +130,51 @@ static void send_command(lcd_config_t *cfg, const uint8_t cmd){
  */
 
 void lcd_init(lcd_config_t *cfg){
-    delay(200);
+    delay_ms(50);
     
     // pulse 8 bit data length three times to set data length mode
 
     send_high_nib(cfg, 0x30);
 
-    delay(20);
+    delay_ms(5);
 
     send_high_nib(cfg, 0x30);
 
-    delay(10);
+    delay_us(120);
 
     send_high_nib(cfg, 0x30);
 
-    delay(5);
+    delay_us(120);
 
     // sets 4 bit mode
 
     send_high_nib(cfg, 0x20);
 
-    delay(5);
+    delay_us(40);
 
     send_command(cfg, 0x28);
 
-    delay(5);
+    delay_us(40);
 
     // toggles the display off
     send_command(cfg, 0x08);
     
-    delay(5);
+    delay_us(40);
 
     // clears the display
     send_command(cfg, 0x01);
 
-    delay(5);
+    delay_ms(2);
 
     // sets the entry mode, increment by 1, shift display off
     send_command(cfg, 0x06);
 
-    delay(5);
+    delay_us(120);
 
     // toggles display on
     send_command(cfg, 0x0C);
 
-    delay(5);
+    delay_us(40);
 }
 
 /**

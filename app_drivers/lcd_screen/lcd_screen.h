@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include "gpio.h"
 #include "gpio_types.h"
+#include "timer.h"
 #include "common_funcs.h"
 
 /**

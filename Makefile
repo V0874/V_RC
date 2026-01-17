@@ -34,9 +34,8 @@ BUILD_DIR = build
 ######################################
 # source
 ######################################
-# C sources
-C_SOURCES =  \
-Core/Src/main.c \
+# C/C++ sources
+C_SOURCES = \
 Core/Src/stm32f4xx_it.c \
 Core/Src/stm32f4xx_hal_msp.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
@@ -65,6 +64,10 @@ app_drivers/uart/uart.c \
 app_drivers/lcd_screen/lcd_screen.c \
 app_drivers/timer/timer.c
 
+CPP_SOURCES = \
+Core/Src/main.cpp \
+app_drivers/nrf24l01/nrf24l01.cpp 
+
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32f411xe.s
@@ -78,16 +81,16 @@ ASMM_SOURCES =
 # binaries
 #######################################
 PREFIX = arm-none-eabi-
-# The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
-# either it can be added to the PATH environment variable.
 ifdef GCC_PATH
 CC = $(GCC_PATH)/$(PREFIX)gcc
-AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
+CXX = $(GCC_PATH)/$(PREFIX)g++
+AS = $(GCC_PATH)/$(PREFIX)g++ -x assembler-with-cpp
 CP = $(GCC_PATH)/$(PREFIX)objcopy
 SZ = $(GCC_PATH)/$(PREFIX)size
 else
 CC = $(PREFIX)gcc
-AS = $(PREFIX)gcc -x assembler-with-cpp
+CXX = $(PREFIX)g++
+AS = $(PREFIX)g++ -x assembler-with-cpp
 CP = $(PREFIX)objcopy
 SZ = $(PREFIX)size
 endif
@@ -95,7 +98,7 @@ HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
  
 #######################################
-# CFLAGS
+# CFLAGS / CXXFLAGS
 #######################################
 # cpu
 CPU = -mcpu=cortex-m4
@@ -110,20 +113,10 @@ FLOAT-ABI = -mfloat-abi=hard
 MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 
 # macros for gcc
-# AS defines
-AS_DEFS = 
+C_DEFS = -DUSE_HAL_DRIVER -DSTM32F411xE
 
-# C defines
-C_DEFS =  \
--DUSE_HAL_DRIVER \
--DSTM32F411xE
-
-
-# AS includes
-AS_INCLUDES = 
-
-# C includes
-C_INCLUDES =  \
+# includes
+C_INCLUDES = \
 -ICore/Inc \
 -IDrivers/STM32F4xx_HAL_Driver/Inc \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
@@ -134,20 +127,20 @@ C_INCLUDES =  \
 -Iapp_drivers/gpio \
 -Iapp_drivers/uart \
 -Iapp_drivers/lcd_screen \
--Iapp_drivers/timer
+-Iapp_drivers/timer \
+-Iapp_drivers/nrf24l01 
 
-# compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-
-CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+CFLAGS   = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+CXXFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections -fno-exceptions -fno-rtti
 
 ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwarf-2
+CFLAGS   += -g -gdwarf-2
+CXXFLAGS += -g -gdwarf-2
 endif
 
-
-# Generate dependency information
-CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
+# Generate dependency info
+CFLAGS   += -MMD -MP -MF"$(@:%.o=%.d)"
+CXXFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
 
 #######################################
@@ -169,26 +162,36 @@ all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET
 # build the application
 #######################################
 # list of objects
-OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
-# list of ASM program objects
+OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CPP_SOURCES:.cpp=.o)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-vpath %.s $(sort $(dir $(ASM_SOURCES)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASMM_SOURCES:.S=.o)))
+
+vpath %.c $(sort $(dir $(C_SOURCES)))
+vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
 vpath %.S $(sort $(dir $(ASMM_SOURCES)))
 
+# C files compiled with gcc
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
 	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
+# C++ files compiled with g++
+$(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR) 
+	$(CXX) -c $(CXXFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.cpp=.lst)) $< -o $@
+
+# ASM / ASMM files
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	$(AS) -c $(CFLAGS) $< -o $@
 $(BUILD_DIR)/%.o: %.S Makefile | $(BUILD_DIR)
 	$(AS) -c $(CFLAGS) $< -o $@
 
+# Link
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	$(CXX) $(OBJECTS) $(LDFLAGS) -o $@
 	$(SZ) $@
 
+# Hex / Bin
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@
 	
@@ -196,7 +199,7 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(BIN) $< $@	
 	
 $(BUILD_DIR):
-	mkdir $@		
+	mkdir -p $@		
 
 #######################################
 # clean up

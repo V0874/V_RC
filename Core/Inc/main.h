@@ -34,6 +34,7 @@ extern "C" {
 #include "../gpio/gpio_types.h"
 #include "../uart/uart.h"
 #include "../lcd_screen/lcd_screen.h"
+#include "../timer/timer.h"
 #include "stdbool.h"
 
 /* Private includes ----------------------------------------------------------*/

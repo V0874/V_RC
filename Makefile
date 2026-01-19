@@ -54,6 +54,7 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
+Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c \
 Core/Src/system_stm32f4xx.c \
 Core/Src/sysmem.c \
 Core/Src/syscalls.c \
@@ -62,7 +63,8 @@ app_drivers/common_funcs/common_funcs.c \
 app_drivers/gpio/gpio.c \
 app_drivers/uart/uart.c \
 app_drivers/lcd_screen/lcd_screen.c \
-app_drivers/timer/timer.c
+app_drivers/timer/timer.c \
+app_drivers/spi/spi.c
 
 CPP_SOURCES = \
 Core/Src/main.cpp \
@@ -128,7 +130,8 @@ C_INCLUDES = \
 -Iapp_drivers/uart \
 -Iapp_drivers/lcd_screen \
 -Iapp_drivers/timer \
--Iapp_drivers/nrf24l01 
+-Iapp_drivers/nrf24l01 \
+-Iapp_drivers/spi 
 
 CFLAGS   = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 CXXFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections -fno-exceptions -fno-rtti

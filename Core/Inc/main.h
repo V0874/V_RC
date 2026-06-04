@@ -31,10 +31,10 @@ extern "C" {
 #include "../adc/adc.h"
 #include "../common_funcs/common_funcs.h"
 #include "../gpio/gpio.h"
-#include "../gpio/gpio_types.h"
 #include "../uart/uart.h"
-#include "../lcd_screen/lcd_screen.h"
 #include "../timer/timer.h"
+#include "../i2c/i2c.h"
+#include "../4440_oled/oled.h"
 #include "stdbool.h"
 
 /* Private includes ----------------------------------------------------------*/

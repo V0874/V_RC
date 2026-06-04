@@ -66,6 +66,8 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
+  I2C_HandleTypeDef hi2c = {0};
+
   TIM_HandleTypeDef timer = {0};
 
   UART_HandleTypeDef huart = {0};
@@ -73,16 +75,6 @@ int main(void)
   ADC_HandleTypeDef adc = {0}; 
 
   ADC_ChannelConfTypeDef adc_conf = {0};
-
-  lcd_config_t lcd_pins = {
-    .rs = {.port = GPIOB, .pin = GPIO_PIN_12},
-    .rw = {.port = GPIOB, .pin = GPIO_PIN_13},
-    .e =  {.port = GPIOB, .pin = GPIO_PIN_14},
-    .db = { 
-          {GPIOB, GPIO_PIN_6},{GPIOB, GPIO_PIN_7},
-          {GPIOB, GPIO_PIN_8},{GPIOB, GPIO_PIN_9}
-          }
-    };
 
 
   volatile uint32_t y_axis = 0;
@@ -121,16 +113,8 @@ int main(void)
   uart_init(&huart);
 
   adc_init(&adc, &adc_conf);
-
-  lcd_gpio_init();
   
   timer4_init(&timer);
-
-  lcd_init(&lcd_pins);
-
-  write_char(&lcd_pins, '^');
-  write_char(&lcd_pins, '_');
-  write_char(&lcd_pins, '^');
 
 
   /* USER CODE END 2 */
@@ -156,8 +140,8 @@ int main(void)
       utoa(adc_ybuff, y_axis, 4);
       conv_x_ready = true;
 
-     // HAL_UART_Transmit(&huart, y_msg, sizeof(y_msg) - 1, HAL_MAX_DELAY);
-     // HAL_UART_Transmit(&huart, adc_ybuff, sizeof(adc_ybuff), HAL_MAX_DELAY);
+      HAL_UART_Transmit(&huart, y_msg, sizeof(y_msg) - 1, HAL_MAX_DELAY);
+      HAL_UART_Transmit(&huart, adc_ybuff, sizeof(adc_ybuff), HAL_MAX_DELAY);
     }
    
     if(HAL_ADC_PollForConversion(&adc, HAL_MAX_DELAY) == HAL_OK && conv_x_ready == true){
@@ -167,8 +151,8 @@ int main(void)
       utoa(adc_xbuff, x_axis, 4);
       conv_x_ready = false;
 
-     // HAL_UART_Transmit(&huart, x_msg, sizeof(x_msg) - 1, HAL_MAX_DELAY);
-     // HAL_UART_Transmit(&huart, adc_xbuff, sizeof(adc_xbuff), HAL_MAX_DELAY);
+      HAL_UART_Transmit(&huart, x_msg, sizeof(x_msg) - 1, HAL_MAX_DELAY);
+      HAL_UART_Transmit(&huart, adc_xbuff, sizeof(adc_xbuff), HAL_MAX_DELAY);
     }
   }
   /* USER CODE END 3 */

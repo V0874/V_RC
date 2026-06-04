@@ -1,6 +1,6 @@
 #include "spi.h"
 
-HAL_SPI_MspInit(SPI_HandleTypeDef *spi){
+void HAL_SPI_MspInit(SPI_HandleTypeDef *spi){
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
     __HAL_RCC_SPI1_CLK_ENABLE();
